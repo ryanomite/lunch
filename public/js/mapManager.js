@@ -45,7 +45,7 @@ export function fitBoundsToLocations(locations) {
   _map.fitBounds(bounds, 60);
 }
 
-export function makeMarkerIcon(color, iconDef) {
+export function makeMarkerContent(color, iconDef) {
   let inner = '';
   if (iconDef?.path) {
     inner = `<svg x="12" y="12" width="24" height="24" viewBox="0 0 ${iconDef.width} 512"><path fill="white" d="${iconDef.path}"/></svg>`;
@@ -53,11 +53,12 @@ export function makeMarkerIcon(color, iconDef) {
     inner = `<text x="24" y="24" text-anchor="middle" dominant-baseline="central" fill="white" font-size="19" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-weight="700">${iconDef.text}</text>`;
   }
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"><circle cx="24" cy="24" r="21" fill="${color}"/>${inner}<circle cx="24" cy="24" r="21" fill="none" stroke="white" stroke-opacity="0.85" stroke-width="2.5"/></svg>`;
-  return {
-    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
-    scaledSize: new google.maps.Size(48, 48),
-    anchor:     new google.maps.Point(24, 24),
-  };
+  const el = document.createElement('div');
+  el.innerHTML = svg;
+  el.style.width = '48px';
+  el.style.height = '48px';
+  el.style.cursor = 'pointer';
+  return el;
 }
 
 export function getDirections(from, to) {

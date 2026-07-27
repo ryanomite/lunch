@@ -7,7 +7,7 @@ let _labels   = [];
 export function init() {}
 
 export function clearAll() {
-  _markers.forEach(m => m.setMap(null));
+  _markers.forEach(m => { m.map = null; });
   _labels.forEach(l => { try { l.setMap(null); } catch (_) {} });
   _markers = [];
   _labels  = [];
@@ -25,13 +25,14 @@ export function renderMarkers(restaurants, tags, users) {
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
     const pos = { lat, lng };
 
-    // Marker icon: first tag's FA icon on primary-colored pin
+    // Marker: first tag's FA icon on secondary-colored pin
     const firstTag = r.tags?.[0];
     const iconDef = firstTag?.icon ? _parseIcon(firstTag.icon) : null;
-    const marker = new google.maps.Marker({
+    const content = mapManager.makeMarkerContent('#F38DC8', iconDef);
+    const marker = new google.maps.marker.AdvancedMarkerElement({
       position: pos,
       map: mapManager.getMap(),
-      icon: mapManager.makeMarkerIcon('#F38DC8', iconDef),
+      content,
       title: r.name,
     });
     _markers.push(marker);

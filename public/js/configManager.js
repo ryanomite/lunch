@@ -50,15 +50,17 @@ export async function show() {
   // ── Tags ──────────────────────────────────────────────────────
   html += `<section class="config-section">
     <h3>Tags</h3>
-    <p class="config-desc">Enter a <a href="https://fontawesome.com/search?ic=free-collection" target="_blank" rel="noopener">Font Awesome</a> class like <code>fa-utensils</code> or <code>fa-burger</code>.</p>
+    <p class="config-desc">Optionally add a <a href="https://fontawesome.com/search?ic=free-collection" target="_blank" rel="noopener">Font Awesome</a> icon like <code>utensils</code> or <code>burger</code> (the <code>fa-</code> prefix is added automatically if omitted).</p>
     <div id="cfg-tags-list" class="config-list">
-      ${tags.map(t => `
+      ${tags.map(t => {
+        const iconHtml = t.icon ? `<i class="fa-solid ${_esc(t.icon)}"></i>` : '';
+        return `
         <div class="config-item" data-tag-id="${t.id}">
-          <i class="fa-solid ${_esc(t.icon)}"></i>
+          ${iconHtml}
           <span class="config-item-name">${_esc(t.label)}</span>
           <button class="btn-icon btn-remove-tag" data-id="${t.id}" title="Remove tag"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-      `).join('')}
+        </div>`;
+      }).join('')}
     </div>
     <div class="config-row">
       <input type="text" id="cfg-new-tag-icon" placeholder="fa-icon" maxlength="40">
@@ -130,8 +132,9 @@ function _wireConfig(container) {
   container.querySelector('#cfg-add-tag').addEventListener('click', async () => {
     const icon  = container.querySelector('#cfg-new-tag-icon').value.trim();
     const label = container.querySelector('#cfg-new-tag-label').value.trim();
-    if (!icon || !label) { panels.showToast('Icon and label required', 'error'); return; }
-    await api.createTag({ icon, label });
+    if (!label) { panels.showToast('Label required', 'error'); return; }
+    const cleanIcon = icon ? (icon.startsWith('fa-') ? icon : `fa-${icon}`) : '';
+    await api.createTag({ icon: cleanIcon, label });
     const tags = await api.getTags();
     state.setTags(tags);
     panels.updateTags(tags);

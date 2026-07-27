@@ -238,10 +238,8 @@ function _wireFilterBar() {
     }, 200);
   });
 
-  // Tags filter
-  const tagsContainer = document.getElementById('filter-tags');
-  tagsContainer.innerHTML = '<span class="filter-label">Tags:</span>';
-  // Populated dynamically when tags are known
+  // Tags filter — populated by _rebuildTagsFilter() below
+  _rebuildTagsFilter();
 
   // Wait time
   const waitSelect = document.getElementById('filter-wait');
@@ -285,9 +283,10 @@ export function rebuildFilters(tags, users) {
 function _rebuildTagsFilter() {
   const container = document.getElementById('filter-tags-chips');
   if (!container) return;
-  container.innerHTML = _allTags.map(t =>
-    `<label class="tag-chip"><input type="checkbox" value="${t.id}"> <i class="fa-solid ${_esc(t.icon)}"></i> ${_esc(t.label)}</label>`
-  ).join('');
+  container.innerHTML = _allTags.map(t => {
+    const iconHtml = t.icon ? `<i class="fa-solid ${_esc(t.icon)}"></i> ` : '';
+    return `<label class="tag-chip"><input type="checkbox" value="${t.id}"> ${iconHtml}${_esc(t.label)}</label>`;
+  }).join('');
   container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
     cb.addEventListener('change', () => {
       _filters.tags = [...container.querySelectorAll('input:checked')].map(c => parseInt(c.value));
@@ -350,7 +349,8 @@ export function openEditor(restaurantId) {
   const tagContainer = document.getElementById('ed-tags');
   tagContainer.innerHTML = _allTags.map(t => {
     const checked = r?.tags?.some(rt => rt.id === t.id) ? 'checked' : '';
-    return `<label class="tag-chip"><input type="checkbox" value="${t.id}" ${checked}> <i class="fa-solid ${_esc(t.icon)}"></i> ${_esc(t.label)}</label>`;
+    const iconHtml = t.icon ? `<i class="fa-solid ${_esc(t.icon)}"></i> ` : '';
+    return `<label class="tag-chip"><input type="checkbox" value="${t.id}" ${checked}> ${iconHtml}${_esc(t.label)}</label>`;
   }).join('');
 
   // Setup Places autocomplete

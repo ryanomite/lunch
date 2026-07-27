@@ -13,7 +13,7 @@ export function getMapLabelClass() {
     constructor(lines, position, bgColor, cssClass = 'map-pin-label') {
       super();
       this._lines    = Array.isArray(lines) ? lines : [lines];
-      this._position = position;
+      this._position = new google.maps.LatLng(position.lat, position.lng);
       this._bgColor  = bgColor;
       this._cssClass = cssClass;
       this._div      = null;
