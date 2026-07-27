@@ -101,31 +101,6 @@
       <div id="config-content" class="config-content"></div>
     </div>
 
-    <!-- ── Toast ───────────────────────────────────────────────── -->
-    <div id="toast" class="toast hidden"></div>
-
-    <!-- ── Modal Backdrop ──────────────────────────────────────── -->
-    <div id="modal-backdrop" class="modal-backdrop hidden"></div>
-
-    <!-- ── First-Run Modal ─────────────────────────────────────── -->
-    <div id="first-run-modal" class="modal hidden">
-      <div class="modal-card">
-        <h2>Who are you?</h2>
-        <p>Enter your name and pick a color so we can track your favorites.</p>
-        <div class="form-row">
-          <label for="fr-name">Name</label>
-          <input type="text" id="fr-name" placeholder="e.g. Mom" maxlength="30" autofocus>
-        </div>
-        <div class="form-row">
-          <label for="fr-color">Favorite color</label>
-          <input type="color" id="fr-color" value="#0d9488">
-        </div>
-        <div class="form-actions">
-          <button id="fr-save" class="btn btn-primary">Continue</button>
-        </div>
-      </div>
-    </div>
-
     <!-- ── Restaurant Editor Modal ─────────────────────────────── -->
     <div id="editor-modal" class="modal hidden">
       <div class="modal-card modal-wide">
@@ -196,6 +171,31 @@
     </div>
 
   </div><!-- /app -->
+
+  <!-- ── Toast ─────────────────────────────────────────────────── -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- ── Modal Backdrop (outside #app so it works before boot) ── -->
+  <div id="modal-backdrop" class="modal-backdrop hidden"></div>
+
+  <!-- ── First-Run Modal (outside #app so it works before boot) ─ -->
+  <div id="first-run-modal" class="modal hidden">
+    <div class="modal-card">
+      <h2>Who are you?</h2>
+      <p>Enter your name and pick a color so we can track your favorites.</p>
+      <div class="form-row">
+        <label for="fr-name">Name</label>
+        <input type="text" id="fr-name" placeholder="e.g. Mom" maxlength="30" autofocus>
+      </div>
+      <div class="form-row">
+        <label for="fr-color">Favorite color</label>
+        <input type="color" id="fr-color" value="#0d9488">
+      </div>
+      <div class="form-actions">
+        <button id="fr-save" class="btn btn-primary">Continue</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ── Loading overlay (shown before app boots) ──────────────── -->
   <div id="loading" class="loading-overlay">

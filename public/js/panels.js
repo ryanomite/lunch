@@ -3,6 +3,7 @@ import * as state from './state.js';
 import * as events from './events.js';
 import * as mapManager from './mapManager.js';
 import * as restaurantManager from './restaurantManager.js';
+import * as configManager from './configManager.js';
 import { WAIT_TIME_OPTIONS, DISTANCE_BUCKETS, SORT_OPTIONS, VISITED_FILTER_OPTIONS, formatDate, todayStr, daysAgo, waitTimeLabel, waitTimeMinutes } from './utils.js';
 
 let _currentView = 'restaurants';
@@ -68,7 +69,7 @@ export function renderView() {
   } else if (_currentView === 'stats') {
     _renderStatsView();
   } else if (_currentView === 'config') {
-    events.emit('config:show');
+    configManager.show();
   }
 }
 
