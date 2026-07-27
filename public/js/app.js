@@ -124,7 +124,7 @@ function _loadMapsApi(key) {
       return;
     }
     const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&libraries=places&callback=__mapsReady`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&libraries=places,marker&loading=async&callback=__mapsReady`;
     script.async = true;
     script.defer = true;
     window.__mapsReady = resolve;
