@@ -8,10 +8,10 @@ export const WAIT_TIME_OPTIONS = [
 export const PRICE_TIER_LABELS = ['', '$', '$$', '$$$', '$$$$'];
 
 export const DISTANCE_BUCKETS = [
-  { value: 'any',   label: 'Any distance' },
-  { value: 'close', label: 'Close (<5 min)' },
-  { value: 'medium', label: 'Medium (5-15 min)' },
-  { value: 'long',  label: 'Long (15+ min)' },
+  { value: 'any',    label: 'Any distance' },
+  { value: 'close',  label: 'Close (<5 min)' },
+  { value: 'medium', label: 'Medium (<15 min)' },
+  { value: 'long',   label: 'Long (<25 min)' },
 ];
 
 export const SORT_OPTIONS = [

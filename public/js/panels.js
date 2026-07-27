@@ -108,8 +108,8 @@ function _getFilteredRestaurants() {
       const m = r.distance_minutes;
       if (m == null) return false;
       if (_filters.distance === 'close')  return m < 5;
-      if (_filters.distance === 'medium') return m >= 5 && m <= 15;
-      if (_filters.distance === 'long')   return m > 15;
+      if (_filters.distance === 'medium') return m < 15;
+      if (_filters.distance === 'long')   return m < 25;
       return true;
     });
   }
@@ -188,7 +188,7 @@ function _renderTable(restaurants) {
       <td class="col-stars">${starsHtml}</td>
       <td class="col-actions">
         <button class="btn-visit ${isVisited ? 'visited' : ''}" data-id="${r.id}" title="${isVisited ? 'Remove visit' : 'Mark visited'}">
-          <i class="fa-solid fa-${isVisited ? 'circle-check' : 'circle'}"></i>
+          <i class="fa-solid fa-check"></i>
         </button>
         <button class="btn-fav ${isFav ? 'favorited' : ''}" data-id="${r.id}" title="${isFav ? 'Remove favorite' : 'Add favorite'}">
           <i class="fa-solid fa-star" style="${isFav ? '' : 'opacity:0.3'}"></i>
@@ -315,8 +315,10 @@ function _wireViewToggle() {
       document.querySelectorAll('.view-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === _mapMode));
       document.getElementById('table-container').classList.toggle('hidden', _mapMode !== 'table');
       document.getElementById('map-container').classList.toggle('hidden', _mapMode !== 'map');
+      const filtered = _getFilteredRestaurants();
+      restaurantManager.renderMarkers(filtered, _allTags, _allUsers);
       if (_mapMode === 'map') {
-        restaurantManager.fitMapToRestaurants(_getFilteredRestaurants());
+        restaurantManager.fitMapToRestaurants(filtered);
       }
     });
   });

@@ -38,7 +38,7 @@ export function renderMarkers(restaurants, tags, users) {
     _markers.push(marker);
 
     // Name label above pin
-    const label = new MapLabel([r.name], pos, '#FFFFFF');
+    const label = new MapLabel([r.name], pos, 'var(--color-primary)');
     label.setMap(mapManager.getMap());
     _labels.push(label);
   });
@@ -65,5 +65,7 @@ function _parseIcon(iconStr) {
   };
   // Strip leading "fa-" if present, then try to find the path
   const key = iconStr.startsWith('fa-') ? iconStr : `fa-${iconStr}`;
-  return ICON_PATHS[key] || null;
+  if (ICON_PATHS[key]) return ICON_PATHS[key];
+  // Fall back to rendering via FA CSS class
+  return { cssClass: key };
 }

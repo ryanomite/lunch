@@ -62,15 +62,17 @@ export function fitBoundsToLocations(locations) {
 }
 
 export function makeMarkerContent(color, iconDef) {
-  let inner = '';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"><circle cx="24" cy="24" r="21" fill="${color}"/>__INNER__<circle cx="24" cy="24" r="21" fill="none" stroke="white" stroke-opacity="0.85" stroke-width="2.5"/></svg>`;
+  let inner;
   if (iconDef?.path) {
     inner = `<svg x="12" y="12" width="24" height="24" viewBox="0 0 ${iconDef.width} 512"><path fill="white" d="${iconDef.path}"/></svg>`;
-  } else if (iconDef?.text) {
-    inner = `<text x="24" y="24" text-anchor="middle" dominant-baseline="central" fill="white" font-size="19" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-weight="700">${iconDef.text}</text>`;
+  } else if (iconDef?.cssClass) {
+    inner = `<foreignObject x="8" y="8" width="32" height="32"><div xmlns="http://www.w3.org/1999/xhtml" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;color:white;font-size:18px;"><i class="fa-solid ${iconDef.cssClass}"></i></div></foreignObject>`;
+  } else {
+    inner = `<text x="24" y="24" text-anchor="middle" dominant-baseline="central" fill="white" font-size="16" font-family="-apple-system,BlinkMacSystemFont,sans-serif" font-weight="700">${iconDef?.text || '?'}</text>`;
   }
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"><circle cx="24" cy="24" r="21" fill="${color}"/>${inner}<circle cx="24" cy="24" r="21" fill="none" stroke="white" stroke-opacity="0.85" stroke-width="2.5"/></svg>`;
   const el = document.createElement('div');
-  el.innerHTML = svg;
+  el.innerHTML = svg.replace('__INNER__', inner);
   el.style.width = '48px';
   el.style.height = '48px';
   el.style.cursor = 'pointer';

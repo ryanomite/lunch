@@ -50,7 +50,7 @@ img{display:block;max-width:100%}
 /* ── Header ────────────────────────────────────────────────────── */
 .app-header{position:sticky;top:0;z-index:100;height:var(--header-h);background:var(--color-primary);color:var(--color-text-light);display:flex;align-items:center;justify-content:space-between;padding:0 .75rem}
 .header-left{display:flex;align-items:center;gap:.5rem}
-.header-title{font-family:'Pacifico',cursive;font-size:1.5rem;line-height:1}
+.header-title{font-family:'Pacifico',cursive;font-size:1.5rem;line-height:1;color:var(--color-text-light);text-decoration:none}
 .app-header .btn-icon{color:var(--color-text-light);font-size:1.125rem}
 
 /* ── Dropdown menu ─────────────────────────────────────────────── */
@@ -112,7 +112,7 @@ select{padding:.375rem .5rem;border:1px solid var(--color-border);border-radius:
 /* ── Map ───────────────────────────────────────────────────────── */
 .map-container{width:100%;height:60vh;min-height:300px;border-radius:var(--radius);overflow:hidden}
 .map{width:100%;height:100%}
-.map-pin-label{position:absolute;white-space:nowrap;padding:.25rem .625rem;border-radius:999px;background:var(--color-primary);color:var(--color-text-light);font-size:.75rem;font-weight:600;pointer-events:none;transform:translate(-50%,-100%);margin-top:-8px;text-align:center;line-height:1.3}
+.map-pin-label{position:absolute;white-space:nowrap;padding:.25rem .625rem;border-radius:999px;background:var(--color-primary);color:var(--color-text-light);font-size:.75rem;font-weight:600;pointer-events:none;text-align:center;line-height:1.3}
 
 /* ── Buttons ───────────────────────────────────────────────────── */
 .btn{display:inline-flex;align-items:center;gap:.375rem;padding:.5rem 1rem;border:none;border-radius:var(--radius);font-size:.875rem;font-weight:500;cursor:pointer;transition:background .15s,opacity .15s;color:var(--color-text-light)}
