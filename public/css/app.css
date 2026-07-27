@@ -1,6 +1,7 @@
 /* ── Tokens (from LUNCH.md spec) ───────────────────────────────── */
 :root {
   --color-primary:     #8BCFC5;
+  --color-primary-faded: #c7ebe5;
   --color-secondary:   #F38DC8;
   --color-tertiary:    #FFF9A0;
   --color-accent:      #F9C3EF;
@@ -90,6 +91,7 @@ select{padding:.375rem .5rem;border:1px solid var(--color-border);border-radius:
 .restaurant-table th,.restaurant-table td{padding:.5rem .625rem;text-align:left;white-space:nowrap;font-size:.875rem;border-bottom:1px solid var(--color-border)}
 .restaurant-table thead th{position:sticky;top:0;background:var(--color-primary);color:var(--color-text-light);font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.03em}
 .restaurant-table tbody tr:hover{background:var(--color-tertiary)}
+.restaurant-table tbody tr:nth-child(even){background:var(--color-primary-faded)}
 .col-name{min-width:10rem;display:flex;align-items:center;gap:.375rem}
 .col-distance,.col-last-visited,.col-total-visits,.col-stars{white-space:nowrap}
 .col-actions{display:flex;gap:.25rem}

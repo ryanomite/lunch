@@ -38,7 +38,7 @@ export function getMapLabelClass() {
       const pos = proj.fromLatLngToDivPixel(this._position);
       if (!pos) return;
       this._div.style.left = `${pos.x - this._div.offsetWidth / 2}px`;
-      this._div.style.top  = `${pos.y - this._div.offsetHeight - 28}px`;
+      this._div.style.top  = `${pos.y - this._div.offsetHeight - 38}px`;
     }
 
     onRemove() {

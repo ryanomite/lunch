@@ -34,7 +34,7 @@ export async function show() {
     <div id="cfg-users-list" class="config-list">
       ${users.map(u => `
         <div class="config-item" data-user-id="${u.id}">
-          <span class="user-swatch" style="background:${u.color}"></span>
+          <input type="color" class="user-color-picker" data-name="${_esc(u.name)}" value="${u.color}" title="Change color for ${_esc(u.name)}">
           <span class="config-item-name">${_esc(u.name)}</span>
           <button class="btn-icon btn-remove-user" data-id="${u.id}" title="Remove user"><i class="fa-solid fa-xmark"></i></button>
         </div>
@@ -125,6 +125,20 @@ function _wireConfig(container) {
       panels.rebuildFilters(state.getTags(), users);
       panels.showToast('User removed', 'success');
       show();
+    });
+  });
+
+  // Edit user color
+  container.querySelectorAll('.user-color-picker').forEach(picker => {
+    picker.addEventListener('change', async () => {
+      const name  = picker.dataset.name;
+      const color = picker.value;
+      await api.updateUserColor(name, color);
+      const users = await api.getUsers();
+      state.setUsers(users);
+      panels.updateUsers(users);
+      panels.rebuildFilters(state.getTags(), users);
+      panels.showToast(`Updated ${name}'s color`, 'success');
     });
   });
 
