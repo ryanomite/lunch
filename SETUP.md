@@ -18,6 +18,7 @@ Set these in CapRover (or locally via `.env`):
 | `DB_PASS` | Database password |
 | `DB_NAME` | Database name (default `lunch`) |
 | `GOOGLE_MAPS_API_KEY` | Google Maps API key (Maps JS + Places + Directions enabled) |
+| `GOOGLE_MAPS_MAP_ID` | Google Maps Map ID (required for Advanced Markers — create in Cloud Console > Map Management) |
 | `PORT` | Server port (default `3000`) |
 
 ## 2. Database Setup

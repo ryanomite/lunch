@@ -61,9 +61,9 @@ app.get('/api/config', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT setting_value FROM settings WHERE setting_key = ?', ['origin_address']);
     const originAddress = rows[0]?.setting_value || '';
-    res.json({ mapsApiKey: apiKey, originAddress });
+    res.json({ mapsApiKey: apiKey, mapId: process.env.GOOGLE_MAPS_MAP_ID || '', originAddress });
   } catch (err) {
-    res.json({ mapsApiKey: apiKey, originAddress: '' });
+    res.json({ mapsApiKey: apiKey, mapId: process.env.GOOGLE_MAPS_MAP_ID || '', originAddress: '' });
   }
 });
 

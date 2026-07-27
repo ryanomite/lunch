@@ -3,8 +3,8 @@ let _geocoder = null;
 let _directionsService = null;
 let _placesService = null;
 
-export function init() {
-  _map = new google.maps.Map(document.getElementById('map'), {
+export function init(origin, mapId) {
+  const mapOpts = {
     center: { lat: 39.8, lng: -98.5 },
     zoom: 4,
     mapTypeControl: false,
@@ -14,12 +14,28 @@ export function init() {
       position: google.maps.ControlPosition.RIGHT_CENTER,
     },
     gestureHandling: 'greedy',
-  });
+  };
+  if (mapId) mapOpts.mapId = mapId;
 
+  _map = new google.maps.Map(document.getElementById('map'), mapOpts);
   _geocoder = new google.maps.Geocoder();
   _directionsService = new google.maps.DirectionsService();
 
+  if (origin) _geocodeOrigin(origin);
+
   return _map;
+}
+
+async function _geocodeOrigin(address) {
+  try {
+    const result = await _geocoder.geocode({ address });
+    if (result.results[0]) {
+      _map.setCenter(result.results[0].geometry.location);
+      _map.setZoom(11);
+    }
+  } catch (err) {
+    console.warn('Geocode failed:', err.message);
+  }
 }
 
 export function getMap() { return _map; }

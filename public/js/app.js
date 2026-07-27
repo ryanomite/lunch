@@ -8,6 +8,7 @@ import * as mapManager from './mapManager.js';
 
 let _sseSource = null;
 let _pwaDeferredPrompt = null;
+let _mapId = '';
 
 // ── Boot ──────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
@@ -24,6 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 2. Fetch config (includes Maps API key)
     const config = await api.getConfig();
+    _mapId = config.mapId || '';
 
     // 3. Load Google Maps API
     await _loadMapsApi(config.mapsApiKey);
@@ -49,7 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Init map with origin
     if (settings.origin_address) {
-      mapManager.init(settings.origin_address);
+      mapManager.init(settings.origin_address, config.mapId);
     }
 
     // 6. Connect SSE
@@ -150,7 +152,7 @@ function _connectSSE() {
 
 // ── Origin change callback ────────────────────────────────────────
 function _onOriginChange(origin) {
-  mapManager.init(origin);
+  mapManager.init(origin, _mapId);
 }
 
 // ── PWA install ───────────────────────────────────────────────────
