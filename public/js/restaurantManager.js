@@ -20,8 +20,10 @@ export function renderMarkers(restaurants, tags, users) {
   users.forEach(u => { userColorMap[u.name] = u.color; });
 
   restaurants.forEach(r => {
-    if (r.lat == null || r.lng == null) return;
-    const pos = { lat: r.lat, lng: r.lng };
+    const lat = Number(r.lat);
+    const lng = Number(r.lng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+    const pos = { lat, lng };
 
     // Marker icon: first tag's FA icon on primary-colored pin
     const firstTag = r.tags?.[0];
@@ -42,7 +44,7 @@ export function renderMarkers(restaurants, tags, users) {
 }
 
 export function fitMapToRestaurants(restaurants) {
-  const valid = restaurants.filter(r => r.lat != null && r.lng != null);
+  const valid = restaurants.filter(r => Number.isFinite(Number(r.lat)) && Number.isFinite(Number(r.lng)));
   mapManager.fitBoundsToLocations(valid);
 }
 

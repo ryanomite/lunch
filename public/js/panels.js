@@ -191,7 +191,7 @@ function _renderTable(restaurants) {
           <i class="fa-solid fa-${isVisited ? 'circle-check' : 'circle'}"></i>
         </button>
         <button class="btn-fav ${isFav ? 'favorited' : ''}" data-id="${r.id}" title="${isFav ? 'Remove favorite' : 'Add favorite'}">
-          <i class="fa-solid fa-${isFav ? 'heart' : 'heart'}" style="${isFav ? '' : 'opacity:0.3'}"></i>
+          <i class="fa-solid fa-star" style="${isFav ? '' : 'opacity:0.3'}"></i>
         </button>
         <button class="btn-delete" data-id="${r.id}" title="Delete"><i class="fa-solid fa-trash"></i></button>
       </td>

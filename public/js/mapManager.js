@@ -33,13 +33,15 @@ export function createAutocomplete(inputEl, opts = {}) {
 
 export function fitBoundsToLocations(locations) {
   if (!locations.length) return;
-  if (locations.length === 1) {
-    _map.setCenter({ lat: locations[0].lat, lng: locations[0].lng });
+  const valid = locations.filter(l => Number.isFinite(Number(l.lat)) && Number.isFinite(Number(l.lng)));
+  if (!valid.length) return;
+  if (valid.length === 1) {
+    _map.setCenter({ lat: Number(valid[0].lat), lng: Number(valid[0].lng) });
     _map.setZoom(13);
     return;
   }
   const bounds = new google.maps.LatLngBounds();
-  locations.forEach(l => bounds.extend({ lat: l.lat, lng: l.lng }));
+  valid.forEach(l => bounds.extend({ lat: Number(l.lat), lng: Number(l.lng) }));
   _map.fitBounds(bounds, 60);
 }
 

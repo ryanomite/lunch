@@ -100,12 +100,13 @@ function _showFirstRunModal() {
     const palette = ['#ef4444','#f97316','#eab308','#22c55e','#14b8a6','#3b82f6','#8b5cf6','#ec4899'];
     colorInput.value = palette[Math.floor(Math.random() * palette.length)];
 
-    saveBtn.addEventListener('click', () => {
+    saveBtn.addEventListener('click', async () => {
       const name = nameInput.value.trim();
       if (!name) { nameInput.focus(); return; }
       const color = colorInput.value;
       localStorage.setItem('lunch-user-name', name);
       localStorage.setItem('lunch-user-color', color);
+      await api.identifyUser(name, color);
       backdrop.classList.add('hidden');
       modal.classList.add('hidden');
       resolve();
