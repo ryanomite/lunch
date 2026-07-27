@@ -6,16 +6,19 @@
 - Google Maps API key (Maps JavaScript + Places + Directions enabled)
 - CapRover with GitHub webhook (for deployment)
 
-## 1. Create env.js
+## 1. Environment Variables
 
-Copy the example and fill in your Google Maps API key:
+Set these in CapRover (or locally via `.env`):
 
-```bash
-cp public/env.example.js public/env.js
-# Edit public/env.js and add your key
-```
-
-**Never commit `public/env.js` to git.**
+| Variable | Description |
+|----------|-------------|
+| `DB_HOST` | MariaDB host (e.g. `srv-captain--db`) |
+| `DB_PORT` | MariaDB port (default `3306`) |
+| `DB_USER` | Database user (e.g. `lunch`) |
+| `DB_PASS` | Database password |
+| `DB_NAME` | Database name (default `lunch`) |
+| `GOOGLE_MAPS_API_KEY` | Google Maps API key (Maps JS + Places + Directions enabled) |
+| `PORT` | Server port (default `3000`) |
 
 ## 2. Database Setup
 
@@ -30,20 +33,7 @@ FLUSH PRIVILEGES;
 
 Tables are created automatically on first boot from `db/schema.sql`.
 
-## 3. Environment Variables
-
-Set these in CapRover (or locally via `.env`):
-
-| Variable | Description |
-|----------|-------------|
-| `DB_HOST` | MariaDB host (e.g. `srv-captain--db`) |
-| `DB_PORT` | MariaDB port (default `3306`) |
-| `DB_USER` | Database user (e.g. `lunch`) |
-| `DB_PASS` | Database password |
-| `DB_NAME` | Database name (default `lunch`) |
-| `PORT` | Server port (default `3000`) |
-
-## 4. Local Development
+## 3. Local Development
 
 ```bash
 npm install
@@ -53,13 +43,13 @@ node server.js
 
 On first visit you'll be prompted to enter your name and pick a color.
 
-## 5. CapRover Deployment
+## 4. CapRover Deployment
 
 ### One-time setup
 
 1. Add the `captain-definition` file to your repo root (already included)
 2. In CapRover, create an app named `lunch`
-3. Set app variables for DB credentials
+3. Set app environment variables (DB credentials + `GOOGLE_MAPS_API_KEY`)
 4. Enable "Enable Deploy Webhook" on the app
 5. Point your domain `lunch.app.ryanroper.com` to the app in CapRover
 
@@ -72,7 +62,7 @@ Add `lunch.app.ryanroper.com` as an HTTP referrer in Google Cloud Console:
 
 Push to your GitHub repo. CapRover will auto-deploy via webhook.
 
-## 6. Architecture
+## 5. Architecture
 
 - **No build step** — vanilla JS ES modules served directly
 - **No client framework** — vanilla DOM manipulation
@@ -95,7 +85,6 @@ lunch/
 │   ├── index.html         # PWA shell
 │   ├── manifest.json
 │   ├── sw.js              # Service worker
-│   ├── env.js             # API key (NOT in git)
 │   ├── css/app.css
 │   ├── icons/             # SVG icons
 │   └── js/

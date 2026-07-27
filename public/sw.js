@@ -36,9 +36,8 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
 
-  // Don't cache API calls, env.js, or external scripts
+  // Don't cache API calls or external scripts
   if (url.pathname.startsWith('/api/') ||
-      url.pathname === '/env.js' ||
       url.origin !== self.location.origin) {
     return;
   }

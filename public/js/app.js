@@ -22,10 +22,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       loadingEl.classList.remove('hidden');
     }
 
-    // 2. Load Google Maps API
-    await _loadMapsApi();
+    // 2. Fetch config (includes Maps API key)
+    const config = await api.getConfig();
 
-    // 3. Fetch all data
+    // 3. Load Google Maps API
+    await _loadMapsApi(config.mapsApiKey);
+
+    // 4. Fetch all data
     const [restaurants, tags, users, settings] = await Promise.all([
       api.getRestaurants(),
       api.getTags(),
@@ -33,13 +36,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       api.getSettings(),
     ]);
 
-    // 4. Init state
+    // 5. Init state
     state.init(restaurants);
     state.setTags(tags);
     state.setUsers(users);
     state.setSettings(settings);
 
-    // 5. Init modules
+    // 6. Init modules
     configManager.init(_onOriginChange);
     panels.init(tags, users);
     restaurantManager.init();
@@ -111,13 +114,11 @@ function _showFirstRunModal() {
 }
 
 // ── Google Maps API ───────────────────────────────────────────────
-function _loadMapsApi() {
+function _loadMapsApi(key) {
   return new Promise((resolve, reject) => {
     if (window.google?.maps) { resolve(); return; }
-    const key = window.GOOGLE_MAPS_API_KEY;
     if (!key) {
-      // No key configured — map features will be degraded but app still works
-      console.warn('No Google Maps API key found in window.GOOGLE_MAPS_API_KEY');
+      console.warn('No Google Maps API key configured — map features will be degraded');
       resolve();
       return;
     }
