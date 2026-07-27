@@ -1,0 +1,16 @@
+{
+  "name": "lunch",
+  "version": "0.1.0",
+  "description": "Family lunch location planner with Google Maps",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "mysql2": "^3.9.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

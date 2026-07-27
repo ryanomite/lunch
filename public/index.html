@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0d9488">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Family lunch planner">
+  <link rel="icon" href="/icons/logo-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icons/logo-icon.svg">
+  <link rel="manifest" href="/manifest.json">
+  <title>Lunch</title>
+  <script src="https://kit.fontawesome.com/932fd63460.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <div id="app" class="hidden">
+
+    <!-- ── Install Banner ──────────────────────────────────────── -->
+    <div id="install-banner" class="install-banner hidden">
+      <span>Install Lunch on this device</span>
+      <button class="btn btn-primary btn-sm" onclick="_installApp()">Install</button>
+      <button class="btn-icon btn-sm" onclick="_dismissInstall()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <!-- ── Header ──────────────────────────────────────────────── -->
+    <header class="app-header">
+      <div class="header-left">
+        <img src="/icons/logo-icon.svg" alt="" class="header-logo">
+        <span class="header-title">Lunch</span>
+      </div>
+      <button id="menu-btn" class="btn-icon"><i class="fa-solid fa-bars"></i></button>
+      <div id="dropdown-menu" class="dropdown-menu hidden">
+        <button class="nav-item" data-view="restaurants"><i class="fa-solid fa-utensils"></i> Restaurants</button>
+        <button class="nav-item" data-view="stats"><i class="fa-solid fa-chart-bar"></i> Stats</button>
+        <button class="nav-item" data-view="config"><i class="fa-solid fa-gear"></i> Config</button>
+      </div>
+    </header>
+
+    <!-- ── Restaurants View ────────────────────────────────────── -->
+    <div id="view-restaurants" class="view-panel">
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <div class="filter-row">
+          <div class="search-wrap">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="search" id="filter-search" placeholder="Search…" autocomplete="off">
+          </div>
+          <button id="btn-add-restaurant" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add</button>
+        </div>
+        <div class="filter-row filter-selects">
+          <div class="filter-group" id="filter-tags">
+            <span class="filter-label">Tags:</span>
+            <div id="filter-tags-chips" class="chip-group"></div>
+          </div>
+          <select id="filter-wait"></select>
+          <select id="filter-distance"></select>
+          <select id="filter-stars"></select>
+          <select id="filter-visited"></select>
+          <select id="filter-sort"></select>
+        </div>
+      </div>
+
+      <!-- View Toggle -->
+      <div class="view-tabs">
+        <button class="view-tab active" data-mode="table"><i class="fa-solid fa-list"></i> Table</button>
+        <button class="view-tab" data-mode="map"><i class="fa-solid fa-map"></i> Map</button>
+      </div>
+
+      <!-- Table -->
+      <div id="table-container" class="table-container">
+        <table class="restaurant-table">
+          <thead>
+            <tr>
+              <th class="col-name">Name</th>
+              <th class="col-distance">Drive</th>
+              <th class="col-last-visited">Last Visit</th>
+              <th class="col-total-visits">Visits</th>
+              <th class="col-stars">Stars</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="restaurant-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Map -->
+      <div id="map-container" class="map-container hidden">
+        <div id="map" class="map"></div>
+      </div>
+    </div>
+
+    <!-- ── Stats View ──────────────────────────────────────────── -->
+    <div id="view-stats" class="view-panel hidden">
+      <div id="stats-content" class="stats-content"></div>
+    </div>
+
+    <!-- ── Config View ─────────────────────────────────────────── -->
+    <div id="view-config" class="view-panel hidden">
+      <div id="config-content" class="config-content"></div>
+    </div>
+
+    <!-- ── Toast ───────────────────────────────────────────────── -->
+    <div id="toast" class="toast hidden"></div>
+
+    <!-- ── Modal Backdrop ──────────────────────────────────────── -->
+    <div id="modal-backdrop" class="modal-backdrop hidden"></div>
+
+    <!-- ── First-Run Modal ─────────────────────────────────────── -->
+    <div id="first-run-modal" class="modal hidden">
+      <div class="modal-card">
+        <h2>Who are you?</h2>
+        <p>Enter your name and pick a color so we can track your favorites.</p>
+        <div class="form-row">
+          <label for="fr-name">Name</label>
+          <input type="text" id="fr-name" placeholder="e.g. Mom" maxlength="30" autofocus>
+        </div>
+        <div class="form-row">
+          <label for="fr-color">Favorite color</label>
+          <input type="color" id="fr-color" value="#0d9488">
+        </div>
+        <div class="form-actions">
+          <button id="fr-save" class="btn btn-primary">Continue</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Restaurant Editor Modal ─────────────────────────────── -->
+    <div id="editor-modal" class="modal hidden">
+      <div class="modal-card modal-wide">
+        <div class="modal-header">
+          <h2 id="editor-title">Add Restaurant</h2>
+          <button id="btn-close-editor" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="editor-fields">
+          <div class="form-row">
+            <label for="ed-name">Name</label>
+            <input type="text" id="ed-name" placeholder="Search or type a name…" maxlength="80">
+          </div>
+          <div class="form-row">
+            <label for="ed-address">Address</label>
+            <input type="text" id="ed-address" readonly placeholder="Auto-filled from Places">
+          </div>
+          <div class="form-row-group">
+            <div class="form-row">
+              <label for="ed-distance">Drive (min)</label>
+              <input type="number" id="ed-distance" min="0" step="1" placeholder="Auto-filled">
+            </div>
+            <div class="form-row">
+              <label for="ed-wait">Wait time</label>
+              <select id="ed-wait">
+                <option value="">Don't know</option>
+                <option value="none">None (order ahead)</option>
+                <option value="short">Short (5–10 min)</option>
+                <option value="medium">Medium (10–20 min)</option>
+                <option value="long">Long (20+ min)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row-group">
+            <div class="form-row">
+              <label for="ed-hours">Sunday hours</label>
+              <input type="text" id="ed-hours" placeholder="e.g. 11am–3pm">
+            </div>
+            <div class="form-row">
+              <label for="ed-price">Price tier</label>
+              <select id="ed-price">
+                <option value="">Don't know</option>
+                <option value="0">Free</option>
+                <option value="1">$</option>
+                <option value="2">$$</option>
+                <option value="3">$$$</option>
+                <option value="4">$$$$</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <label for="ed-notes">Notes</label>
+            <textarea id="ed-notes" rows="2" placeholder="Any notes…"></textarea>
+          </div>
+          <div class="form-row">
+            <label for="ed-last-visit">Last visit (set manually)</label>
+            <input type="date" id="ed-last-visit">
+          </div>
+          <div class="form-row">
+            <label>Tags</label>
+            <div id="ed-tags" class="chip-group"></div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button id="btn-cancel-editor" class="btn btn-secondary">Cancel</button>
+          <button id="btn-save-editor" class="btn btn-primary">Save</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /app -->
+
+  <!-- ── Loading overlay (shown before app boots) ──────────────── -->
+  <div id="loading" class="loading-overlay">
+    <img src="/icons/logo-icon.svg" alt="Lunch" class="loading-logo">
+    <p>Loading…</p>
+  </div>
+
+  <!-- ── Env (API key, not in git) ────────────────────────────── -->
+  <script src="/env.js"></script>
+  <!-- ── App modules ──────────────────────────────────────────── -->
+  <script type="module" src="/js/events.js"></script>
+  <script type="module" src="/js/api.js"></script>
+  <script type="module" src="/js/state.js"></script>
+  <script type="module" src="/js/utils.js"></script>
+  <script type="module" src="/js/mapManager.js"></script>
+  <script type="module" src="/js/mapLabel.js"></script>
+  <script type="module" src="/js/restaurantManager.js"></script>
+  <script type="module" src="/js/panels.js"></script>
+  <script type="module" src="/js/configManager.js"></script>
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>
