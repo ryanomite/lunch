@@ -79,10 +79,12 @@ export function makeMarkerContent(color, iconDef) {
 
 export function getDirections(from, to) {
   return new Promise((resolve, reject) => {
+    const toCoords = typeof to === 'string' ? to
+      : { lat: typeof to.lat === 'function' ? to.lat() : to.lat, lng: typeof to.lng === 'function' ? to.lng() : to.lng };
     _directionsService.route(
       {
         origin:      typeof from === 'string' ? from : { lat: from.lat, lng: from.lng },
-        destination: typeof to === 'string'   ? to   : { lat: to.lat,   lng: to.lng   },
+        destination: toCoords,
         travelMode:  google.maps.TravelMode.DRIVING,
       },
       (result, status) => {
