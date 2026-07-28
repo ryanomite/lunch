@@ -53,17 +53,19 @@ export async function show() {
     <p class="config-desc">Optionally add a <a href="https://fontawesome.com/search?ic=free-collection" target="_blank" rel="noopener">Font Awesome</a> icon like <code>utensils</code> or <code>burger</code> (the <code>fa-</code> prefix is added automatically if omitted).</p>
     <div id="cfg-tags-list" class="config-list">
       ${tags.map(t => {
-        const iconHtml = t.icon ? `<i class="fa-solid ${_esc(t.icon)}"></i>` : '';
+        const iconVal = t.icon || '';
+        const previewHtml = t.icon ? `<i class="fa-solid ${_esc(t.icon)}"></i>` : '';
         return `
         <div class="config-item" data-tag-id="${t.id}">
-          ${iconHtml}
+          <span class="tag-icon-preview">${previewHtml}</span>
+          <input type="text" class="tag-icon-input" data-id="${t.id}" value="${_esc(iconVal)}" placeholder="fa-icon" maxlength="40">
           <span class="config-item-name">${_esc(t.label)}</span>
           <button class="btn-icon btn-remove-tag" data-id="${t.id}" title="Remove tag"><i class="fa-solid fa-xmark"></i></button>
         </div>`;
       }).join('')}
     </div>
     <div class="config-row">
-      <input type="text" id="cfg-new-tag-icon" placeholder="fa-icon" maxlength="40">
+      <input type="text" id="cfg-new-tag-icon" value="fa-utensils" maxlength="40">
       <input type="text" id="cfg-new-tag-label" placeholder="Label" maxlength="30">
       <button id="cfg-add-tag" class="btn btn-secondary">Add</button>
     </div>
@@ -170,6 +172,27 @@ function _wireConfig(container) {
       panels.showToast('Tag removed', 'success');
       show();
     });
+  });
+
+  // Edit tag icon
+  container.querySelectorAll('.tag-icon-input').forEach(input => {
+    let debounce;
+    input.addEventListener('input', () => {
+      clearTimeout(debounce);
+      debounce = setTimeout(async () => {
+        const id = parseInt(input.dataset.id);
+        const raw = input.value.trim();
+        const icon = raw ? (raw.startsWith('fa-') ? raw : `fa-${raw}`) : '';
+        await api.updateTag(id, { icon });
+        const preview = input.closest('.config-item').querySelector('.tag-icon-preview');
+        preview.innerHTML = icon ? `<i class="fa-solid ${_esc(icon)}"></i>` : '';
+        const tags = await api.getTags();
+        state.setTags(tags);
+        panels.updateTags(tags);
+        panels.rebuildFilters(tags, state.getUsers());
+      }, 500);
+    });
+  });
   });
 
   // Restore deleted

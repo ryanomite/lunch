@@ -1,7 +1,7 @@
 /* ── Tokens (from LUNCH.md spec) ───────────────────────────────── */
 :root {
   --color-primary:     #8BCFC5;
-  --color-primary-faded: #d8f0ec;
+  --color-primary-faded: #e1f2ef;
   --color-secondary:   #F38DC8;
   --color-tertiary:    #FFF9A0;
   --color-accent:      #F9C3EF;
@@ -178,6 +178,8 @@ input[readonly]{background:#f9fafb;color:var(--color-text-muted);cursor:default}
 .config-list{display:flex;flex-direction:column;gap:.375rem;margin-bottom:.75rem}
 .config-item{display:flex;align-items:center;gap:.5rem;padding:.375rem .5rem;border:1px solid var(--color-border);border-radius:var(--radius-sm);background:var(--color-background)}
 .config-item-name{flex:1;font-size:.9375rem}
+.tag-icon-preview{width:1.5rem;text-align:center;flex-shrink:0}
+.tag-icon-input{width:7rem;font-size:.8125rem;padding:.25rem .375rem;border:1px solid var(--color-border);border-radius:var(--radius-sm);background:var(--color-background)}
 .user-swatch{width:1rem;height:1rem;border-radius:50%;flex-shrink:0}
 
 /* ── Toast ─────────────────────────────────────────────────────── */
