@@ -92,9 +92,9 @@ function _getFilteredRestaurants() {
     list = list.filter(r => r.name.toLowerCase().includes(q) || (r.address || '').toLowerCase().includes(q));
   }
 
-  // Tags
+  // Tags (AND filter — must have ALL selected tags)
   if (_filters.tags.length) {
-    list = list.filter(r => _filters.tags.some(tid => r.tags?.some(t => t.id === tid)));
+    list = list.filter(r => _filters.tags.every(tid => r.tags?.some(t => t.id === tid)));
   }
 
   // Wait time
@@ -180,7 +180,7 @@ function _renderTable(restaurants) {
     return `<tr data-id="${r.id}">
       <td class="col-name">
         <button class="btn-edit" data-id="${r.id}" title="Edit"><i class="fa-solid fa-pencil"></i></button>
-        ${_esc(r.name)}
+        ${_esc(r.name)}${(r.tags || []).filter(t => t.icon).map(t => `<i class="fa-solid ${_esc(t.icon)} tag-icon-inline" title="${_esc(t.label)}"></i>`).join('')}
       </td>
       <td class="col-distance">${r.distance_minutes != null ? r.distance_minutes + ' min' : '—'}</td>
       <td class="col-last-visited">${formatDate(r.last_visited)}</td>
