@@ -1,8 +1,8 @@
 export const WAIT_TIME_OPTIONS = [
-  { value: 'fast',    label: 'Fast food' },
-  { value: '5-15',    label: '5-15 minutes' },
-  { value: '15-30',   label: '15-30 minutes' },
-  { value: '30+',     label: '30+ minutes' },
+  { value: 'none',   label: 'None' },
+  { value: 'short',  label: 'Short (5–10 min)' },
+  { value: 'medium', label: 'Medium (10–20 min)' },
+  { value: 'long',   label: 'Long (20+ min)' },
 ];
 
 export const PRICE_TIER_LABELS = ['', '$', '$$', '$$$', '$$$$'];
@@ -59,10 +59,10 @@ export function waitTimeLabel(val) {
 
 export function waitTimeMinutes(val) {
   switch (val) {
-    case 'fast':  return 5;
-    case '5-15':  return 10;
-    case '15-30': return 22;
-    case '30+':   return 40;
-    default:      return 0;
+    case 'none':   return 0;
+    case 'short':  return 7;
+    case 'medium': return 15;
+    case 'long':   return 25;
+    default:       return 0;
   }
 }

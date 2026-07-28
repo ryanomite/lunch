@@ -48,8 +48,36 @@ function _wireNav() {
   });
   document.getElementById('dropdown-menu').addEventListener('click', e => e.stopPropagation());
 
+  // Hide Config nav for non-admins
+  if (!state.isCurrentUserAdmin()) {
+    const configBtn = document.querySelector('.nav-item[data-view="config"]');
+    if (configBtn) configBtn.classList.add('hidden');
+  }
+
   document.querySelectorAll('.nav-item').forEach(btn => {
     btn.addEventListener('click', () => {
+      if (btn.id === 'btn-share-link') {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+          showToast('Link copied to clipboard');
+        }).catch(() => {
+          showToast('Failed to copy link');
+        });
+        document.getElementById('dropdown-menu').classList.add('hidden');
+        return;
+      }
+      if (btn.id === 'btn-reload-app') {
+        document.getElementById('dropdown-menu').classList.add('hidden');
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(regs =>
+            Promise.all(regs.map(r => r.unregister()))
+          ).then(() => caches.keys().then(keys =>
+            Promise.all(keys.map(k => caches.delete(k)))
+          )).then(() => location.reload());
+        } else {
+          location.reload();
+        }
+        return;
+      }
       _currentView = btn.dataset.view;
       document.getElementById('dropdown-menu').classList.add('hidden');
       document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.view === _currentView));
@@ -60,6 +88,11 @@ function _wireNav() {
 
 // ── View switching ────────────────────────────────────────────────
 export function renderView() {
+  if (_currentView === 'config' && !state.isCurrentUserAdmin()) {
+    _currentView = 'restaurants';
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.view === _currentView));
+  }
+
   document.querySelectorAll('.view-panel').forEach(v => v.classList.add('hidden'));
   const current = document.getElementById(`view-${_currentView}`);
   if (current) current.classList.remove('hidden');
@@ -99,7 +132,11 @@ function _getFilteredRestaurants() {
 
   // Wait time
   if (_filters.waitTime !== 'any') {
-    list = list.filter(r => r.wait_time === _filters.waitTime);
+    if (_filters.waitTime === 'unknown') {
+      list = list.filter(r => !r.wait_time);
+    } else {
+      list = list.filter(r => r.wait_time === _filters.waitTime);
+    }
   }
 
   // Distance
@@ -244,7 +281,8 @@ function _wireFilterBar() {
   // Wait time
   const waitSelect = document.getElementById('filter-wait');
   waitSelect.innerHTML = '<option value="any">Any wait</option>' +
-    WAIT_TIME_OPTIONS.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+    WAIT_TIME_OPTIONS.map(o => `<option value="${o.value}">${o.label}</option>`).join('') +
+    '<option value="unknown">Unknown</option>';
   waitSelect.addEventListener('change', () => { _filters.waitTime = waitSelect.value; _renderRestaurantView(); });
 
   // Distance

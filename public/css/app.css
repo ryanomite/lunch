@@ -1,7 +1,7 @@
 /* ── Tokens (from LUNCH.md spec) ───────────────────────────────── */
 :root {
   --color-primary:     #8BCFC5;
-  --color-primary-faded: #e1f2ef;
+  --color-primary-faded: #fcf8c9;
   --color-secondary:   #F38DC8;
   --color-tertiary:    #FFF9A0;
   --color-accent:      #F9C3EF;
@@ -59,6 +59,7 @@ img{display:block;max-width:100%}
 .nav-item{display:flex;align-items:center;gap:.5rem;width:100%;padding:.625rem 1rem;border:none;background:none;text-align:left;cursor:pointer;color:var(--color-text-main);font-size:.9375rem}
 .nav-item:hover{background:var(--color-tertiary)}
 .nav-item.active{color:var(--color-secondary);font-weight:600}
+.nav-separator{height:1px;background:var(--color-border);margin:.25rem 0}
 
 /* ── View panels ───────────────────────────────────────────────── */
 .view-panel{padding:.75rem}

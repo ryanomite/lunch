@@ -26,6 +26,12 @@ export function getUser(name) {
   return _users.find(u => u.name === name) || null;
 }
 
+export function isCurrentUserAdmin() {
+  const name = localStorage.getItem('lunch-user-name');
+  const user = name ? _users.find(u => u.name === name) : null;
+  return !!user?.is_admin;
+}
+
 export function addRestaurant(r) {
   _restaurants.push(r);
   events.emit('restaurant:added', r);
