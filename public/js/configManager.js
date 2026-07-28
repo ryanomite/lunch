@@ -193,7 +193,6 @@ function _wireConfig(container) {
       }, 500);
     });
   });
-  });
 
   // Restore deleted
   container.querySelectorAll('.btn-restore').forEach(btn => {
