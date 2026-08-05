@@ -10,6 +10,7 @@ const DEFAULT_SORT_DIR = {
   name:         'asc',
   distance:     'asc',
   wait_time:    'asc',
+  price:        'asc',
   stars:        'desc',
   last_visited: 'desc',
   total_visits: 'desc',
@@ -26,6 +27,7 @@ const _filters = {
   tags:     [],
   waitTime: 'any',
   distance: 'any',
+  price:    'any',
   stars:    'any',
   visited:  'any',
   sort:     'name',
@@ -171,6 +173,12 @@ function _getFilteredRestaurants() {
     });
   }
 
+  // Price
+  if (_filters.price !== 'any') {
+    const maxTier = parseInt(_filters.price, 10);
+    list = list.filter(r => r.price_tier != null && r.price_tier <= maxTier);
+  }
+
   // Stars
   if (_filters.stars !== 'any') {
     if (_filters.stars === 'mine') {
@@ -208,6 +216,7 @@ function _getFilteredRestaurants() {
         case 'name':         return a.name.localeCompare(b.name);
         case 'distance':     return (a.distance_minutes ?? 9999) - (b.distance_minutes ?? 9999);
         case 'wait_time':    return waitTimeMinutes(a.wait_time) - waitTimeMinutes(b.wait_time);
+        case 'price':        return _cmpPrice(a.price_tier, b.price_tier);
         case 'stars':        return (a.favorites?.length || 0) - (b.favorites?.length || 0);
         case 'last_visited': return String(a.last_visited || '').localeCompare(String(b.last_visited || ''));
         case 'total_visits': return (a.total_visits || 0) - (b.total_visits || 0);
@@ -250,10 +259,10 @@ function _renderTable(restaurants) {
         <button class="btn-edit" data-id="${r.id}" title="Edit"><i class="fa-solid fa-pencil"></i></button>
         ${_esc(r.name)}${(r.tags || []).filter(t => t.icon).map(t => `<i class="fa-solid ${_esc(t.icon)} tag-icon-inline" title="${_escAttr(t.label)}"></i>`).join('')}
       </td>
-      <td class="col-price">${priceHtml}</td>
-      <td class="col-distance">${r.distance_minutes != null ? r.distance_minutes + ' min' : '—'}</td>
       <td class="col-last-visited">${formatDate(r.last_visited)}</td>
       <td class="col-total-visits">${r.total_visits || 0}</td>
+      <td class="col-price">${priceHtml}</td>
+      <td class="col-distance">${r.distance_minutes != null ? r.distance_minutes + ' min' : '—'}</td>
       <td class="col-stars">${starsHtml}</td>
       <td class="col-actions">
         <button class="btn-visit ${isVisited ? 'visited' : ''}" data-id="${r.id}" title="${isVisited ? 'Remove visit' : 'Mark visited'}">
@@ -321,6 +330,12 @@ function _wireFilterBar() {
   const distSelect = document.getElementById('filter-distance');
   distSelect.innerHTML = DISTANCE_BUCKETS.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
   distSelect.addEventListener('change', () => { _filters.distance = distSelect.value; _renderRestaurantView(); });
+
+  // Price
+  const priceSelect = document.getElementById('filter-price');
+  priceSelect.innerHTML = '<option value="any">Any price</option>' +
+    [1, 2, 3, 4].map(t => `<option value="${t}">${PRICE_INFO[t].label} or less</option>`).join('');
+  priceSelect.addEventListener('change', () => { _filters.price = priceSelect.value; _renderRestaurantView(); });
 
   // Stars
   const starsSelect = document.getElementById('filter-stars');
@@ -630,4 +645,11 @@ function _esc(str) {
 
 function _escAttr(str) {
   return _esc(str).replace(/"/g, '&quot;');
+}
+
+function _cmpPrice(a, b) {
+  if (a == null && b == null) return 0;
+  if (a == null) return 1;
+  if (b == null) return -1;
+  return a - b;
 }
