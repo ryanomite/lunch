@@ -7,6 +7,13 @@ export const WAIT_TIME_OPTIONS = [
 
 export const PRICE_TIER_LABELS = ['', '$', '$$', '$$$', '$$$$'];
 
+export const PRICE_INFO = {
+  1: { label: '$',    hint: '<$10' },
+  2: { label: '$$',   hint: '$10-20' },
+  3: { label: '$$$',  hint: '$20-50' },
+  4: { label: '$$$$', hint: '$50+' },
+};
+
 export const DISTANCE_BUCKETS = [
   { value: 'any',    label: 'Any distance' },
   { value: 'close',  label: 'Close (<5 min)' },

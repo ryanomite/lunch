@@ -75,14 +75,15 @@
 
       <!-- Table -->
       <div id="table-container" class="table-container">
-        <table class="restaurant-table">
+        <table id="restaurant-table" class="restaurant-table">
           <thead>
             <tr>
-              <th class="col-name">Name</th>
-              <th class="col-distance">Drive</th>
-              <th class="col-last-visited">Last Visit</th>
-              <th class="col-total-visits">Visits</th>
-              <th class="col-stars">Stars</th>
+              <th class="col-name" data-sort="name">Name<span class="sort-ind"></span></th>
+              <th class="col-price">Price</th>
+              <th class="col-distance" data-sort="distance">Drive<span class="sort-ind"></span></th>
+              <th class="col-last-visited" data-sort="last_visited">Last Visit<span class="sort-ind"></span></th>
+              <th class="col-total-visits" data-sort="total_visits">Visits<span class="sort-ind"></span></th>
+              <th class="col-stars" data-sort="stars">Stars<span class="sort-ind"></span></th>
               <th class="col-actions">Actions</th>
             </tr>
           </thead>
@@ -147,11 +148,10 @@
               <label for="ed-price">Price tier</label>
               <select id="ed-price">
                 <option value="">Don't know</option>
-                <option value="0">Free</option>
-                <option value="1">$</option>
-                <option value="2">$$</option>
-                <option value="3">$$$</option>
-                <option value="4">$$$$</option>
+                <option value="1">$ (&lt;$10)</option>
+                <option value="2">$$ ($10-20)</option>
+                <option value="3">$$$ ($20-50)</option>
+                <option value="4">$$$$ ($50+)</option>
               </select>
             </div>
           </div>

@@ -91,13 +91,18 @@ select{padding:.375rem .5rem;border:1px solid var(--color-border);border-radius:
 .table-container{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .restaurant-table th,.restaurant-table td{padding:.5rem .625rem;text-align:left;white-space:nowrap;font-size:.875rem;border-bottom:1px solid var(--color-border)}
 .restaurant-table thead th{position:sticky;top:0;background:var(--color-primary);color:var(--color-text-light);font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.03em}
+.restaurant-table thead th[data-sort]{cursor:pointer;user-select:none}
+.restaurant-table thead th[data-sort]:hover{background:var(--color-secondary)}
+.sort-ind{font-size:.65rem;margin-left:.15rem}
 .restaurant-table tbody tr:hover{background:var(--color-tertiary)}
 .restaurant-table tbody tr:nth-child(even){background:var(--color-primary-faded)}
 .restaurant-table tbody tr:nth-child(even){background:var(--color-primary-faded)}
 .col-name{min-width:10rem;display:flex;align-items:center;gap:.375rem}
 .tag-icon-inline{font-size:.7rem;color:var(--color-secondary);margin-left:.25rem}
-.col-distance,.col-last-visited,.col-total-visits,.col-stars{white-space:nowrap}
+.col-distance,.col-last-visited,.col-total-visits,.col-stars,.col-price{white-space:nowrap}
 .col-actions{display:flex;gap:.25rem}
+.price-badge{position:relative;cursor:help;font-weight:600}
+.price-badge:hover::after,.price-badge:focus::after{content:attr(data-hint);position:absolute;left:50%;bottom:130%;transform:translateX(-50%);background:var(--color-text-main);color:var(--color-text-light);padding:.125rem .5rem;border-radius:var(--radius-sm);font-size:.75rem;white-space:nowrap;z-index:10;pointer-events:none}
 
 .btn-icon{background:none;border:none;cursor:pointer;padding:.375rem;border-radius:var(--radius-sm);color:var(--color-text-muted);font-size:.875rem}
 .btn-icon:hover{background:var(--color-tertiary);color:var(--color-text-main)}

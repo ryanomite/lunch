@@ -4,12 +4,22 @@ import * as events from './events.js';
 import * as mapManager from './mapManager.js';
 import * as restaurantManager from './restaurantManager.js';
 import * as configManager from './configManager.js';
-import { WAIT_TIME_OPTIONS, DISTANCE_BUCKETS, SORT_OPTIONS, VISITED_FILTER_OPTIONS, formatDate, todayStr, daysAgo, waitTimeLabel, waitTimeMinutes } from './utils.js';
+import { WAIT_TIME_OPTIONS, DISTANCE_BUCKETS, SORT_OPTIONS, VISITED_FILTER_OPTIONS, PRICE_INFO, formatDate, todayStr, daysAgo, waitTimeLabel, waitTimeMinutes } from './utils.js';
+
+const DEFAULT_SORT_DIR = {
+  name:         'asc',
+  distance:     'asc',
+  wait_time:    'asc',
+  stars:        'desc',
+  last_visited: 'desc',
+  total_visits: 'desc',
+};
 
 let _currentView = 'restaurants';
 let _mapMode     = 'table';
 let _allTags     = [];
 let _allUsers    = [];
+let _sortDir     = null;
 
 const _filters = {
   search:   '',
@@ -108,12 +118,22 @@ export function renderView() {
 
 // ── Restaurant view ───────────────────────────────────────────────
 function _renderRestaurantView() {
+  _renderSortIndicators();
   const filtered = _getFilteredRestaurants();
   _renderTable(filtered);
   restaurantManager.renderMarkers(filtered, _allTags, _allUsers);
   if (_mapMode === 'map') {
     restaurantManager.fitMapToRestaurants(filtered);
   }
+}
+
+function _renderSortIndicators() {
+  document.querySelectorAll('#restaurant-table th[data-sort]').forEach(th => {
+    const span = th.querySelector('.sort-ind');
+    if (!span) return;
+    const dir = _sortDir || DEFAULT_SORT_DIR[_filters.sort] || 'asc';
+    span.textContent = th.dataset.sort === _filters.sort ? (dir === 'asc' ? ' ▲' : ' ▼') : '';
+  });
 }
 
 function _getFilteredRestaurants() {
@@ -158,6 +178,9 @@ function _getFilteredRestaurants() {
       list = list.filter(r => r.favorites?.some(f => f.name === name));
     } else if (_filters.stars === 'unstarred') {
       list = list.filter(r => !r.favorites?.length);
+    } else if (_filters.stars.startsWith('user:')) {
+      const uname = _filters.stars.slice(5);
+      list = list.filter(r => r.favorites?.some(f => f.name === uname));
     } else {
       const minCount = parseInt(_filters.stars, 10);
       list = list.filter(r => (r.favorites?.length || 0) >= minCount);
@@ -178,18 +201,20 @@ function _getFilteredRestaurants() {
       const j = Math.floor(Math.random() * (i + 1));
       [sorted[i], sorted[j]] = [sorted[j], sorted[i]];
     }
-  } else if (_filters.sort === 'name') {
-    sorted.sort((a, b) => a.name.localeCompare(b.name));
-  } else if (_filters.sort === 'distance') {
-    sorted.sort((a, b) => (a.distance_minutes ?? 9999) - (b.distance_minutes ?? 9999));
-  } else if (_filters.sort === 'wait_time') {
-    sorted.sort((a, b) => waitTimeMinutes(a.wait_time) - waitTimeMinutes(b.wait_time));
-  } else if (_filters.sort === 'stars') {
-    sorted.sort((a, b) => (b.favorites?.length || 0) - (a.favorites?.length || 0));
-  } else if (_filters.sort === 'last_visited') {
-    sorted.sort((a, b) => (a.last_visited || '0000') < (b.last_visited || '0000') ? 1 : -1);
-  } else if (_filters.sort === 'total_visits') {
-    sorted.sort((a, b) => (b.total_visits || 0) - (a.total_visits || 0));
+  } else {
+    const dir = (_sortDir || DEFAULT_SORT_DIR[_filters.sort] || 'asc') === 'desc' ? -1 : 1;
+    const cmp = (a, b) => {
+      switch (_filters.sort) {
+        case 'name':         return a.name.localeCompare(b.name);
+        case 'distance':     return (a.distance_minutes ?? 9999) - (b.distance_minutes ?? 9999);
+        case 'wait_time':    return waitTimeMinutes(a.wait_time) - waitTimeMinutes(b.wait_time);
+        case 'stars':        return (a.favorites?.length || 0) - (b.favorites?.length || 0);
+        case 'last_visited': return String(a.last_visited || '').localeCompare(String(b.last_visited || ''));
+        case 'total_visits': return (a.total_visits || 0) - (b.total_visits || 0);
+        default:             return 0;
+      }
+    };
+    sorted.sort((a, b) => cmp(a, b) * dir);
   }
 
   return sorted;
@@ -201,24 +226,31 @@ function _renderTable(restaurants) {
   const userColorMap = {};
   _allUsers.forEach(u => { userColorMap[u.name] = u.color; });
   const currentUser = localStorage.getItem('lunch-user-name');
+  const isAdmin     = state.isCurrentUserAdmin();
 
   if (!restaurants.length) {
-    tbody.innerHTML = '<tr><td colspan="9" class="empty-state">No restaurants match your filters.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No restaurants match your filters.</td></tr>';
     return;
   }
 
   tbody.innerHTML = restaurants.map(r => {
     const isVisited = !!r.visited_today;
     const isFav     = r.favorites?.some(f => f.name === currentUser);
+    const canDelete = isAdmin || r.created_by === currentUser;
     const starsHtml = (r.favorites || []).map(f =>
-      `<i class="fa-solid fa-star" style="color:${f.color}" title="${f.name}"></i>`
+      `<i class="fa-solid fa-star" style="color:${f.color}" title="${_escAttr(f.name)}"></i>`
     ).join(' ');
+    const price = PRICE_INFO[r.price_tier];
+    const priceHtml = price
+      ? `<span class="price-badge" data-hint="${_escAttr(price.hint)}">${price.label}</span>`
+      : '—';
 
     return `<tr data-id="${r.id}">
       <td class="col-name">
         <button class="btn-edit" data-id="${r.id}" title="Edit"><i class="fa-solid fa-pencil"></i></button>
-        ${_esc(r.name)}${(r.tags || []).filter(t => t.icon).map(t => `<i class="fa-solid ${_esc(t.icon)} tag-icon-inline" title="${_esc(t.label)}"></i>`).join('')}
+        ${_esc(r.name)}${(r.tags || []).filter(t => t.icon).map(t => `<i class="fa-solid ${_esc(t.icon)} tag-icon-inline" title="${_escAttr(t.label)}"></i>`).join('')}
       </td>
+      <td class="col-price">${priceHtml}</td>
       <td class="col-distance">${r.distance_minutes != null ? r.distance_minutes + ' min' : '—'}</td>
       <td class="col-last-visited">${formatDate(r.last_visited)}</td>
       <td class="col-total-visits">${r.total_visits || 0}</td>
@@ -230,7 +262,7 @@ function _renderTable(restaurants) {
         <button class="btn-fav ${isFav ? 'favorited' : ''}" data-id="${r.id}" title="${isFav ? 'Remove favorite' : 'Add favorite'}">
           <i class="fa-solid fa-star" style="${isFav ? '' : 'opacity:0.3'}"></i>
         </button>
-        <button class="btn-delete" data-id="${r.id}" title="Delete"><i class="fa-solid fa-trash"></i></button>
+        ${canDelete ? `<button class="btn-delete" data-id="${r.id}" title="Delete"><i class="fa-solid fa-trash"></i></button>` : ''}
       </td>
     </tr>`;
   }).join('');
@@ -305,7 +337,23 @@ function _wireFilterBar() {
   const sortSelect = document.getElementById('filter-sort');
   sortSelect.innerHTML = SORT_OPTIONS.map(o => `<option value="${o.value}">Sort: ${o.label}</option>`).join('');
   sortSelect.value = 'name';
-  sortSelect.addEventListener('change', () => { _filters.sort = sortSelect.value; _renderRestaurantView(); });
+  sortSelect.addEventListener('change', () => { _filters.sort = sortSelect.value; _sortDir = null; _renderRestaurantView(); });
+
+  // Column header sorting
+  document.querySelectorAll('#restaurant-table th[data-sort]').forEach(th => {
+    th.addEventListener('click', () => {
+      const key = th.dataset.sort;
+      if (_filters.sort === key) {
+        _sortDir = ((_sortDir || DEFAULT_SORT_DIR[key] || 'asc') === 'asc') ? 'desc' : 'asc';
+      } else {
+        _filters.sort = key;
+        _sortDir = null;
+      }
+      const sortSel = document.getElementById('filter-sort');
+      if ([...sortSel.options].some(o => o.value === key)) sortSel.value = key;
+      _renderRestaurantView();
+    });
+  });
 
   // Add button
   document.getElementById('btn-add-restaurant').addEventListener('click', () => openEditor());
@@ -342,6 +390,9 @@ function _rebuildStarsFilter() {
   }
   html += '<option value="mine">My favorites</option>';
   html += '<option value="unstarred">No stars</option>';
+  _allUsers.forEach(u => {
+    html += `<option value="user:${_escAttr(u.name)}">Starred by ${_esc(u.name)}</option>`;
+  });
   sel.innerHTML = html;
 }
 
@@ -575,4 +626,8 @@ function _esc(str) {
   return String(str || '')
     .replace(/&/g, '&amp;').replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
+}
+
+function _escAttr(str) {
+  return _esc(str).replace(/"/g, '&quot;');
 }
